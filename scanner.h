@@ -1,8 +1,6 @@
 #ifndef _SCANNER_H_
 #define _SCANNER_H_
 #include <stdio.h>
-#include <iostream>
-#include <fstream>
 #include <string.h>
 #include <list>
 #include "sign.h"
@@ -30,37 +28,39 @@ public:
         rread(false), retracted(false), linenum(0),
         wordnum(0), charnum(0), state(Normal)
         {
+            memset(buffer, 0 ,sizeof(buffer));
             buffer[kLEnd] = EOF;
             buffer[kREnd] = EOF;
-            fin.open(filename, ios::in);
+            fin = fopen(filename, "r");
         }
-    Scanner(const char* filein, const char* fileout):forward(0), lread(false),
+    Scanner(const char* filein, const char* fileerr, const char* filedoc):forward(0), lread(false),
         rread(false), retracted(false), linenum(0),
         wordnum(0), charnum(0), state(Normal)
         {
+            memset(buffer, 0 ,sizeof(buffer));
             buffer[kLEnd] = EOF;
             buffer[kREnd] = EOF;
-            fin.open(filein, ios::in);
-            fout.open(fileout, ios::out);
+            fin = fopen(filein, "r");
+            ferr = fopen(fileerr, "w");
+            fdoc = fopen(filedoc, "w");
         }
     // ~Scanner()
     // {
     //     token.clear();
     //     token.shrink_to_fit();
     // }
-    ifstream fin;
+    FILE *fin, *ferr, *fdoc;
     bool lread, rread, retracted;
     char curchar, buffer[kMaxBuf];
     int forward, linenum, wordnum, charnum;
-    ofstream fout;
     void Tokenizer();
     void FillBuffer();
     void read();
     bool GetChar();
-    void RefreshBuffer(int strptr);
+    // void RefreshBuffer(int strptr);
     void retract();
-    void SkipSpace();
-    void SkipSpaceExceptLine();
+    // void SkipSpace();
+    // void SkipSpaceExceptLine();
     bool TryNext(char ch);
 private:
     State state;

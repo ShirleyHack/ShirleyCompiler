@@ -5,12 +5,13 @@
 #include "externs.h"
 #include "scanner.h"
 
-char file[kFileName], err[kFileName];
+char *file, *err, *doc;
 char readbuf[kStrBuf];
+int signlistsize, keylistsize, markend, wrongnum;
 bool EndOfFile;
-std::list<const Token*> tokenlist;
+TokenList* tokenlist;
 unordered_set<char> signcharset;
-const string signlist[] =
+const char* signlist[]=
 {
     "+", "-", "*", "/", "%",
     ">", "<", ">=", "<=", "=", "!=", "==", "=~",
@@ -21,9 +22,9 @@ const string signlist[] =
     "?", ":",
     ".", ",", ";", "..",
     "(", ")", "[", "]", "{", "}", "|",
-    "@", "@@", "$", "\0"
+    "$", "\0"
 };
-const string keyword[] =
+const char* keyword[]=
 {
 	"auto",    "break",   "case",    "char",
     "const",   "continue","default", "do",
@@ -38,30 +39,43 @@ const string keyword[] =
 
 void Scanner::FillBuffer()
 {
+    int i;
     if(!lread)
     {
         rread = false;
         lread = true;
-        fin.read(buffer, kLEnd);
+        for(i = 0; i < kLEnd; i++)
+        {
+            if((buffer[i] = fgetc(fin)) == EOF)
+            {
+                EndOfFile = true;
+                markend = i + 1;
+                break;
+            }            
+        }
     }
     else if(lread && !rread)
     {
         lread = false;
         rread = true;
-        fin.read(buffer+kLEnd+1, kLEnd);
+        for(i = kLEnd + 1; i < kLEnd + kLEnd + 1; i++)
+        {
+            if((buffer[i] = fgetc(fin)) == EOF)
+            {
+                EndOfFile = true;
+                markend = i + 1;
+                break;
+            }            
+        }
     }
     else
-        fprintf(stderr, "Failed to fill buffer");
-    if(fin.gcount() != kLEnd)
-    {
-        buffer[fin.gcount()] = EOF;
-        EndOfFile = true;
-    }
-    EndOfFile = false;
+        fprintf(ferr, "[%d]: Failed to fill buffer", ++wrongnum);
 }
 // 需要完善：return false能不能好看些
 bool Scanner::GetChar()
 {
+    if(forward == markend && EndOfFile)
+        return false;
     curchar = buffer[forward];
     if(curchar == '\n')
         linenum++;
@@ -69,11 +83,10 @@ bool Scanner::GetChar()
         charnum++;
     if(buffer[++forward] == EOF)
     {
-        if(EndOfFile)
-            return false;
-        if(!retracted)
+        if(!retracted && !EndOfFile)
             FillBuffer();
-        if(forward == kLEnd)
+        if(forward == markend && EndOfFile) {}
+        else if(forward == kLEnd)
             forward++;
         else if(forward == kREnd)
             forward = kStart;
@@ -82,12 +95,12 @@ bool Scanner::GetChar()
         retracted = false;
     return true;
 }
-void Scanner::SkipSpace()
-{
-    while(curchar == ' ' || curchar == '\n' ||
-        curchar == '\t')
-        GetChar();
-}
+// void Scanner::SkipSpace()
+// {
+//     while(curchar == ' ' || curchar == '\n' ||
+//         curchar == '\t')
+//         GetChar();
+// }
 
 void Scanner::read()
 {
@@ -111,6 +124,7 @@ void Scanner::read()
             }
             else if(curchar == '/')
             {
+                readbuf[strptr++] = curchar;
                 if(TryNext('/'))
                 {
                     formerchar = '/';
@@ -122,7 +136,7 @@ void Scanner::read()
                     formerchar = '*';
                 }
                 else
-                    fprintf(stderr, "Unexpected char '/'.\n");
+                    fprintf(ferr, "[%d]: Unexpected char '/'.\n", ++wrongnum);
             }
             else if(InCharSet(curchar))
             {
@@ -141,7 +155,7 @@ void Scanner::read()
             else if(curchar == ' ' || curchar == '\t' ||
                 curchar == '\n')
             {
-                SkipSpace();
+                continue;
             }
             // else if()
             // {
@@ -153,7 +167,7 @@ void Scanner::read()
                 tokentype = Token::EndSymbol;
             }
             else
-                fprintf(stderr, "Failed at read().\n");
+                fprintf(ferr, "[%d]: Wrong syntax.\n", ++wrongnum);
         }
         else if(state == Scanner::Macro)
         {
@@ -170,7 +184,7 @@ void Scanner::read()
                 readbuf[strptr++] = curchar;
             else
             {
-                if(InKeyword(readbuf))
+                if(InStrList(keyword, readbuf, keylistsize))
                     tokentype = Token::Keyword;
                 else
                     tokentype = Token::Identifier;
@@ -180,31 +194,22 @@ void Scanner::read()
         }
         else if(state == Scanner::Annotation)
         {
+            readbuf[strptr++] = curchar;
             if((formerchar == '/' && curchar != '\n') ||
-                (formerchar == '*' && curchar != '*'))
-                readbuf[strptr++] = curchar;
-            else if(formerchar == '*' && curchar == '*')
+                (formerchar == '*' && curchar != '*' && curchar != EOF)) {}
+            else if(formerchar == '*' && curchar == '*' && TryNext('/'))
             {
-                if(TryNext('/'))
-                {
-                    tokentype = Token::Sign;
-                    state = Scanner::Normal;
-                }
-                else
-                    readbuf[strptr++] = curchar;
-            }
-            else if(formerchar == '/' && curchar == '\n')
-            {
-                tokentype = Token::Sign;
+                readbuf[strptr++] = '/';
+                tokentype = Token::Annotation;
                 state = Scanner::Normal;
             }
-            else if(formerchar == '/' && TryNext(EOF))
+            else if(formerchar == '/' && (curchar == '\n' || TryNext(EOF)))
             {
-                tokentype = Token::Sign;
+                tokentype = Token::Annotation;
                 state = Scanner::Normal;
             }
             else
-                fprintf(stderr, "Wrong annotation format.\n");
+                fprintf(ferr, "[%d]: Wrong annotation format.\n", ++wrongnum);
         }
         else if(state == Scanner::Number)
         {
@@ -230,26 +235,41 @@ void Scanner::read()
                 readbuf[strptr++] = curchar;
             else
             {
-                // string str = readbuf;
-                if(InSignlist(readbuf))
+                bool match = false;
+                int i, len = strptr;
+                while(len)
+                {
+                    if(InStrList(signlist, readbuf, len, signlistsize))
+                    {
+                        match = true;
+                        break;
+                    }
+                    len--;
+                }
+                if(match)
                 {
                     tokentype = Token::Sign;
                     state = Scanner::Normal;
+                    for(i = len; i < strptr; i++)
+                    {
+                        readbuf[i] = '\0';
+                        retract();
+                    }
                     retract();
                 }
                 else
-                    fprintf(stderr, "Unexpected sign \"%s\"!\n", readbuf);
+                    fprintf(ferr, "[%d]: Unexpected sign \"%s\"!\n", ++wrongnum, readbuf);
             }
         }
         //here
-
         else if(state == Scanner::String)
         {
-            if(TryNext(EOF))
-                fprintf(stderr, "Wrong string format. Expecting a \'%c\'\n", formerchar);
-            if(formerchar != curchar)
-                readbuf[strptr++] = curchar;
-            else
+            if(curchar == EOF)
+                fprintf(ferr, "[%d]: Wrong string format. Expecting a \' %c \'\n", ++wrongnum, formerchar);
+            // printf("cur[1]: %c\n", curchar);
+            readbuf[strptr++] = curchar;
+            // printf("cur[1]: %c\n", curchar);
+            if(formerchar == curchar)
             {
                 tokentype = Token::String;
                 state = Scanner::Normal;
@@ -265,12 +285,15 @@ void Scanner::read()
         // }
         if(tokentype != Token::None)
         {
-            printf("[1]sizeof tokenlist: %d\n", tokenlist.size());
             if(tokentype == Token::Annotation)
-                fout << readbuf << endl;
+                fprintf(fdoc, readbuf);
             else
-                tokenlist.push_back(new Token(tokentype, readbuf));
-                printf("[2]sizeof tokenlist: %d\n", tokenlist.size());
+            {
+                tokenlist->pushback(TokenInitVal(tokentype, readbuf));
+                if(tokentype == Token::EndSymbol)
+                    break;
+            }
+            memset(readbuf, 0, sizeof(readbuf));
             tokentype = Token::None;
             formerchar = '\0';
             haspoint = false;
@@ -283,11 +306,12 @@ void Scanner::Tokenizer()
 {
     Initialize();
     FillBuffer();
-    while(!(EndOfFile && buffer[forward]))
-    {
-        SkipSpace();
-        read();
-    }
+    // while(!(EndOfFile && buffer[forward]))
+    // while(forward != markend)
+    // {
+        // SkipSpace();
+    read();
+    // }
     PrintTokenList();
 }
 
@@ -301,6 +325,7 @@ void Scanner::retract()
         if(forward == kLEnd)
             forward--;
     }
+    curchar = buffer[forward - 1];
     retracted = true;
 }
 
@@ -310,12 +335,9 @@ bool Scanner::TryNext(char ch)
     {
         if(ch == 'd' && isdigit(curchar))
             return true;
-        else
-        {
-            if(curchar == ch)
-                return true;
-            else retract();
-        }
+        else if(curchar == ch)
+            return true;
+        retract();
     }
     return false;
 }
@@ -326,7 +348,14 @@ bool Scanner::TryNext(char ch)
 void Initialize()
 {
     EndOfFile = false;
-    InitSignCharset();
+    markend = -1;
+    signlistsize = 0, keylistsize = 0, wrongnum = 0;
+    while(signlist[signlistsize][0] != '\0')
+        signlistsize++;
+    while(keyword[keylistsize][0] != '\0')
+        keylistsize++;
+    InitSignCharset(signlist, signlistsize);
+    tokenlist = TokenListInit();
 }
 
 char* GetExtension(char* filename)
@@ -344,16 +373,17 @@ char* GetExtension(char* filename)
 
 bool ProcessInput()
 {
-    printf("Please type your C file name and errlog name(for example: a.cpp/a.c, err.txt):\n");
-    scanf("%s%s", file, err);
     char *extension = GetExtension(file);
     char *errext = GetExtension(err);
+    char *docext = GetExtension(doc);
     printf("fileext:%s, errext:%s\n", extension, errext);
     if(((extension[0] == 'c' && extension[1] == '\0') ||
         (extension[0] == 'c' && extension[1] == 'p' &&
         extension[2] == 'p' && extension[3] == '\0')) &&
         errext[0] == 't' && errext[1] == 'x' &&
-        errext[2] == 't' && errext[3] == '\0')
+        errext[2] == 't' && errext[3] == '\0' &&
+        docext[0] == 't' && docext[1] == 'x' &&
+        docext[2] == 't' && docext[3] == '\0')
         return true;
     return false;
 }
@@ -368,35 +398,72 @@ bool IsIdentifierFirst(char ch)
 }
 void PrintTokenList()
 {
-    std::list<const Token*>::iterator it;
-    for(it = tokenlist.begin(); it != tokenlist.end(); it++)
+    // std::list<const Token*>::iterator it;
+    // for(it = tokenlist.begin(); it != tokenlist.end(); it++)
+    // {
+    //     const Token* cur = *it;
+    //     printf("Type: %-18s Value: %s\n",
+    //         tmp->type == Token::Macro ? "Macro" :
+    //         tmp->type == Token::Keyword ? "Keyword" :
+    //         tmp->type == Token::Int ? "Int" :
+    //         tmp->type == Token::Float ? "Float" :
+    //         tmp->type == Token::Identifier ? "Identifier" :
+    //         tmp->type == Token::Annotation ? "Annotation" :
+    //         tmp->type == Token::Sign ? "Sign" :
+    //         tmp->type == Token::String ? "String" :
+    //         tmp->type == Token::EndSymbol ? "EndSymbol" :
+    //         "Wrong syntax!", tmp->value);
+    // }
+    Token* cur = tokenlist->head->next;
+    int num = 0;
+    while(cur != NULL)
     {
-        const Token* tmp = *it;
         printf("Type: %-18s Value: %s\n",
-            tmp->type == Token::Macro ? "Macro" :
-            tmp->type == Token::Keyword ? "Keyword" :
-            tmp->type == Token::Int ? "Int" :
-            tmp->type == Token::Float ? "Float" :
-            tmp->type == Token::Identifier ? "Identifier" :
-            tmp->type == Token::Annotation ? "Annotation" :
-            tmp->type == Token::Sign ? "Sign" :
-            tmp->type == Token::String ? "String" :
-            tmp->type == Token::EndSymbol ? "EndSymbol" :
-            "Wrong syntax!", tmp->value);
+            cur->type == Token::Macro ? "Macro" :
+            cur->type == Token::Keyword ? "Keyword" :
+            cur->type == Token::Int ? "Int" :
+            cur->type == Token::Float ? "Float" :
+            cur->type == Token::Identifier ? "Identifier" :
+            cur->type == Token::Annotation ? "Annotation" :
+            cur->type == Token::Sign ? "Sign" :
+            cur->type == Token::String ? "String" :
+            cur->type == Token::EndSymbol ? "EndSymbol" :
+            "Wrong syntax!", cur->value);
+        cur = cur->next;
+        num++;
     }
+    printf("Amount of token: %d\n", num);
 }
 // void Destruct()
 // {
 //     KeyWord.clear();
 //     KeyWord.shrink_to_fit();
 // }
-int main()
+void PrintUsage()
 {
+    printf("Usage:\nsgcc file.cpp err.txt doc.txt\n");
+    exit(-2);
+}
+int main(int argc, char* argv[])
+{
+    int i = 01;
+    printf("i = %d\n", i);
+    if(argc<4)
+        PrintUsage();
+    else
+    {
+        file = argv[1];
+        err = argv[2];
+        doc = argv[3];
+    }
     if(!ProcessInput())
     {
-        fprintf(stderr, "Wrong format.\n");
+        fprintf(stderr, "Wrong inputfile format.\n");
         return -1;
     }
-    Scanner sc = Scanner(file, err);
+    Scanner sc = Scanner(file, err, doc);
     sc.Tokenizer();
+    fclose(sc.fin);
+    fclose(sc.ferr);
+    fclose(sc.fdoc);
 }

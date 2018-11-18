@@ -1,8 +1,7 @@
 #ifndef _TOKEN_H_
 #define _TOKEN_H_
-#include <string>
-using namespace std;
-class Token
+
+struct Token
 {
 public:
     enum Type
@@ -13,13 +12,16 @@ public:
     };
     Type type;
     char *value;
-    Token():type(None), value("\0") {}
-    Token(Type type, char* buf):type(type)
-    {
-        char* ptr = buf;
-        int size = sizeof(buf) / sizeof(buf[0]);
-        value = (char*)malloc(sizeof(char)*size);
-    }
+    Token *next;
 };
-bool InKeyword(string word);
+Token* TokenInit();
+Token* TokenInitVal(Token::Type type, char* buf);
+
+struct TokenList
+{
+public:
+    Token* head;
+    void pushback(Token* newtoken);
+};
+TokenList* TokenListInit();
 #endif
