@@ -1,2 +1,0 @@
-[1]: Wrong syntax.
-[2]: Wrong string format. Expecting a ' " '

@@ -1,0 +1,540 @@
+AND-expression:   equality-expression  z-additioni
+abstract-declarator:   direct-abstract-declarator
+abstract-declarator:   pointer  z-additionzc
+z-additionzc:   $
+z-additionzc:   direct-abstract-declarator
+additive-expression:   multiplicative-expression  z-additione
+alignment-specifier:   _Alignas  (  z-additionzd
+z-additionzd:   type-name  )
+z-additionzd:   constant-expression  )
+argument-expression-list:   assignment-expression  z-additionc
+assignment-expression:   unary-expression  assignment-operator  assignment-expression
+assignment-expression:   conditional-expression
+assignment-operator:   |=
+assignment-operator:   =
+assignment-operator:   *=
+assignment-operator:   /=
+assignment-operator:   %=
+assignment-operator:   +=
+assignment-operator:   -=
+assignment-operator:   <<=
+assignment-operator:   >>=
+assignment-operator:   &=
+assignment-operator:   ^=
+atomic-type-specifier:   _Atomic  (  type-name  )
+block-item:   statement
+block-item:   declaration
+block-item-list:   statement  z-additionz
+block-item-list:   declaration  z-additionz
+cast-expression:   (  type-name  )  cast-expression
+cast-expression:   unary-expression
+compound-statement:   {  z-additionze
+z-additionze:   block-item-list  }
+z-additionze:   }
+conditional-expression:   logical-OR-expression  z-additionzf
+z-additionzf:   $
+z-additionzf:   ?  expression  :  conditional-expression
+constant-expression:   logical-OR-expression  z-additionzg
+z-additionzg:   $
+z-additionzg:   ?  expression  :  conditional-expression
+declaration:   static_assert-declaration
+declaration:   declaration-specifiers  z-additionzh
+z-additionzh:   init-declarator-list  ;
+z-additionzh:   ;
+declaration-list:   static_assert-declaration  z-additionzb
+declaration-list:   declaration-specifiers  z-additionzi
+z-additionzi:   init-declarator-list  ;  z-additionzb
+z-additionzi:   ;  z-additionzb
+declaration-specifiers:   _Alignas  (  z-additionzn
+declaration-specifiers:   storage-class-specifier  z-additionzj
+declaration-specifiers:   type-qualifier  z-additionzl
+declaration-specifiers:   type-specifier  z-additionzk
+declaration-specifiers:   function-specifier  z-additionzm
+z-additionzj:   $
+z-additionzj:   declaration-specifiers
+z-additionzk:   $
+z-additionzk:   declaration-specifiers
+z-additionzl:   $
+z-additionzl:   declaration-specifiers
+z-additionzm:   declaration-specifiers
+z-additionzm:   $
+z-additionzn:   constant-expression  )  z-additionzo
+z-additionzn:   type-name  )  z-additionzp
+z-additionzo:   $
+z-additionzo:   declaration-specifiers
+z-additionzp:   declaration-specifiers
+z-additionzp:   $
+declarator:   direct-declarator
+declarator:   pointer  direct-declarator
+designation:   designator-list  =
+designator:   .  identifier
+designator:   [  constant-expression  ]
+designator-list:   .  identifier  z-additiony
+designator-list:   [  constant-expression  ]  z-additiony
+direct-abstract-declarator:   [  z-additionzr
+direct-abstract-declarator:   (  z-additionzq
+z-additionzq:   )  z-additionw
+z-additionzq:   abstract-declarator  )  z-additionw
+z-additionzq:   parameter-type-list  )  z-additionw
+z-additionzr:   assignment-expression  ]  z-additionw
+z-additionzr:   static  type-qualifier-list  assignment-expression  ]  z-additionw
+z-additionzr:   ]  z-additionw
+z-additionzr:   *  ]  z-additionw
+z-additionzr:   type-qualifier-list  z-additionzs
+z-additionzs:   ]  z-additionw
+z-additionzs:   static  assignment-expression  ]  z-additionw
+z-additionzs:   assignment-expression  ]  z-additionw
+direct-declarator:   (  declarator  )  z-additions
+direct-declarator:   identifier  z-additions
+enum-specifier:   enum  z-additionzt
+z-additionzt:   identifier  z-additionzv
+z-additionzt:   {  enumerator-list  z-additionzu
+z-additionzu:   }
+z-additionzu:   ,  }
+z-additionzv:   $
+z-additionzv:   {  enumerator-list  z-additionzw
+z-additionzw:   }
+z-additionzw:   ,  }
+enumerator:   enumeration-constant  z-additionzx
+z-additionzx:   $
+z-additionzx:   =  constant-expression
+enumerator-list:   enumeration-constant  z-additionzy
+z-additionzy:   z-additionr
+z-additionzy:   =  constant-expression  z-additionr
+equality-expression:   relational-expression  z-additionh
+exclusive-OR-expression:   equality-expression  z-additioni  z-additionj
+expression:   unary-expression  assignment-operator  assignment-expression  z-additionn
+expression:   conditional-expression  z-additionn
+expression-statement:   ;
+expression-statement:   assignment-expression  z-additionn  ;
+external-declaration:   static_assert-declaration
+external-declaration:   function-definition
+external-declaration:   declaration-specifiers  z-additionzz
+z-additionzz:   init-declarator-list  ;
+z-additionzz:   ;
+function-definition:   function-specifier  z-additionzzd
+function-definition:   storage-class-specifier  z-additionzza
+function-definition:   direct-declarator  z-additionzzg
+function-definition:   type-specifier  z-additionzzb
+function-definition:   pointer  direct-declarator  z-additionzzf
+function-definition:   type-qualifier  z-additionzzc
+function-definition:   alignment-specifier  z-additionzze
+z-additionzza:   declaration-specifiers
+z-additionzza:   $
+z-additionzzb:   declaration-specifiers
+z-additionzzb:   $
+z-additionzzc:   $
+z-additionzzc:   declaration-specifiers
+z-additionzzd:   declaration-specifiers
+z-additionzzd:   $
+z-additionzze:   $
+z-additionzze:   declaration-specifiers
+z-additionzzf:   declaration-list  compound-statement
+z-additionzzf:   compound-statement
+z-additionzzg:   declaration-list  compound-statement
+z-additionzzg:   compound-statement
+function-specifier:   _Noreturn
+function-specifier:   inline
+generic-assoc-list:   generic-association  z-additiona
+generic-association:   default  :  assignment-expression
+generic-association:   type-name  :  assignment-expression
+generic-selection:   _Generic  (  assignment-expression  ,  generic-assoc-list  )
+identifier-list:   identifier  z-additionv
+inclusive-OR-expression:   AND-expression  z-additionj  z-additionk
+init-declarator:   direct-declarator  z-additionzzi
+init-declarator:   pointer  direct-declarator  z-additionzzh
+z-additionzzh:   $
+z-additionzzh:   =  initializer
+z-additionzzi:   $
+z-additionzzi:   =  initializer
+init-declarator-list:   declarator  z-additionzzj
+z-additionzzj:   z-additiono
+z-additionzzj:   =  initializer  z-additiono
+initializer:   {  initializer-list  z-additionzzk
+initializer:   conditional-expression
+initializer:   unary-expression  assignment-operator  assignment-expression
+z-additionzzk:   }
+z-additionzzk:   ,  }
+initializer-list:   {  initializer-list  z-additionzzl
+initializer-list:   designator-list  =  initializer  z-additionx
+initializer-list:   assignment-expression  z-additionx
+z-additionzzl:   }  z-additionx
+z-additionzzl:   ,  }  z-additionx
+iteration-statement:   for  (  z-additionzzm
+iteration-statement:   while  (  expression  )  statement
+iteration-statement:   do  statement  while  (  expression  )  ;
+z-additionzzm:   declaration  z-additionzzs
+z-additionzzm:   expression  ;  z-additionzzn
+z-additionzzm:   ;  z-additionzzq
+z-additionzzn:   expression  ;  z-additionzzo
+z-additionzzn:   ;  z-additionzzp
+z-additionzzo:   expression  )  statement
+z-additionzzo:   )  statement
+z-additionzzp:   )  statement
+z-additionzzp:   expression  )  statement
+z-additionzzq:   expression  ;  z-additionzzv
+z-additionzzq:   ;  z-additionzzr
+z-additionzzr:   )  statement
+z-additionzzr:   expression  )  statement
+z-additionzzs:   ;  z-additionzzu
+z-additionzzs:   expression  ;  z-additionzzt
+z-additionzzt:   )  statement
+z-additionzzt:   expression  )  statement
+z-additionzzu:   )  statement
+z-additionzzu:   expression  )  statement
+z-additionzzv:   expression  )  statement
+z-additionzzv:   )  statement
+jump-statement:   return  z-additionzzw
+jump-statement:   goto  identifier  ;
+jump-statement:   continue  ;
+jump-statement:   break  ;
+z-additionzzw:   ;
+z-additionzzw:   expression  ;
+labeled-statement:   default  :  statement
+labeled-statement:   identifier  :  statement
+labeled-statement:   case  constant-expression  :  statement
+logical-AND-expression:   exclusive-OR-expression  z-additionk  z-additionl
+logical-OR-expression:   inclusive-OR-expression  z-additionl  z-additionm
+multiplicative-expression:   (  type-name  )  cast-expression  z-additiond
+multiplicative-expression:   unary-expression  z-additiond
+parameter-declaration:   alignment-specifier  z-additionzzzd
+parameter-declaration:   storage-class-specifier  z-additionzzx
+parameter-declaration:   function-specifier  z-additionzzzb
+parameter-declaration:   type-specifier  declarator
+parameter-declaration:   type-specifier  z-additionzzy
+parameter-declaration:   type-qualifier  z-additionzzz
+parameter-declaration:   storage-class-specifier  z-additionzzzf
+z-additionzzx:   declarator
+z-additionzzx:   declaration-specifiers  declarator
+z-additionzzy:   abstract-declarator
+z-additionzzy:   $
+z-additionzzy:   declaration-specifiers  z-additionzzzg
+z-additionzzz:   declaration-specifiers  z-additionzzza
+z-additionzzz:   declarator
+z-additionzzz:   abstract-declarator
+z-additionzzz:   $
+z-additionzzza:   declarator
+z-additionzzza:   abstract-declarator
+z-additionzzza:   $
+z-additionzzzb:   declarator
+z-additionzzzb:   abstract-declarator
+z-additionzzzb:   $
+z-additionzzzb:   declaration-specifiers  z-additionzzzc
+z-additionzzzc:   declarator
+z-additionzzzc:   $
+z-additionzzzc:   abstract-declarator
+z-additionzzzd:   $
+z-additionzzzd:   declarator
+z-additionzzzd:   declaration-specifiers  z-additionzzze
+z-additionzzzd:   abstract-declarator
+z-additionzzze:   declarator
+z-additionzzze:   abstract-declarator
+z-additionzzze:   $
+z-additionzzzf:   declaration-specifiers  z-additionzzzh
+z-additionzzzf:   $
+z-additionzzzf:   abstract-declarator
+z-additionzzzg:   $
+z-additionzzzg:   declarator
+z-additionzzzg:   abstract-declarator
+z-additionzzzh:   abstract-declarator
+z-additionzzzh:   $
+parameter-list:   declaration-specifiers  z-additionzzzi
+z-additionzzzi:   declarator  z-additionu
+z-additionzzzi:   z-additionu
+z-additionzzzi:   abstract-declarator  z-additionu
+parameter-type-list:   parameter-declaration  z-additionu  z-additionzzzj
+z-additionzzzj:   $
+z-additionzzzj:   ,  ...
+pointer:   *  z-additionzzzk
+z-additionzzzk:   type-qualifier-list  z-additionzzzl
+z-additionzzzk:   $
+z-additionzzzk:   pointer
+z-additionzzzl:   pointer
+z-additionzzzl:   $
+postfix-expression:   (  type-name  )  {  initializer-list  z-additionzzzm
+postfix-expression:   primary-expression  z-additionb
+z-additionzzzm:   }  z-additionb
+z-additionzzzm:   ,  }  z-additionb
+primary-expression:   _Generic  (  assignment-expression  ,  generic-assoc-list  )
+primary-expression:   identifier
+primary-expression:   constant
+primary-expression:   string-literal
+primary-expression:   (  expression  )
+relational-expression:   shift-expression  z-additiong
+selection-statement:   switch  (  expression  )  statement
+selection-statement:   if  (  expression  )  statement  z-additionzzzn
+z-additionzzzn:   $
+z-additionzzzn:   else  statement
+shift-expression:   multiplicative-expression  z-additione  z-additionf
+specifier-qualifier-list:   type-qualifier  z-additionzzzp
+specifier-qualifier-list:   type-specifier  z-additionzzzo
+z-additionzzzo:   specifier-qualifier-list
+z-additionzzzo:   $
+z-additionzzzp:   $
+z-additionzzzp:   specifier-qualifier-list
+statement:   goto  identifier  ;
+statement:   identifier  :  statement
+statement:   case  constant-expression  :  statement
+statement:   default  :  statement
+statement:   {  z-additionzzzq
+statement:   return  z-additionzzzzb
+statement:   expression  ;
+statement:   ;
+statement:   if  (  expression  )  statement  z-additionzzzr
+statement:   break  ;
+statement:   switch  (  expression  )  statement
+statement:   while  (  expression  )  statement
+statement:   do  statement  while  (  expression  )  ;
+statement:   for  (  z-additionzzzs
+statement:   continue  ;
+z-additionzzzq:   block-item-list  }
+z-additionzzzq:   }
+z-additionzzzr:   else  statement
+z-additionzzzr:   $
+z-additionzzzs:   expression  ;  z-additionzzzt
+z-additionzzzs:   ;  z-additionzzzw
+z-additionzzzs:   declaration  z-additionzzzy
+z-additionzzzt:   ;  z-additionzzzv
+z-additionzzzt:   expression  ;  z-additionzzzu
+z-additionzzzu:   )  statement
+z-additionzzzu:   expression  )  statement
+z-additionzzzv:   expression  )  statement
+z-additionzzzv:   )  statement
+z-additionzzzw:   expression  ;  z-additionzzzzc
+z-additionzzzw:   ;  z-additionzzzx
+z-additionzzzx:   expression  )  statement
+z-additionzzzx:   )  statement
+z-additionzzzy:   expression  ;  z-additionzzzz
+z-additionzzzy:   ;  z-additionzzzza
+z-additionzzzz:   )  statement
+z-additionzzzz:   expression  )  statement
+z-additionzzzza:   )  statement
+z-additionzzzza:   expression  )  statement
+z-additionzzzzb:   ;
+z-additionzzzzb:   expression  ;
+z-additionzzzzc:   expression  )  statement
+z-additionzzzzc:   )  statement
+static_assert-declaration:   _Static_assert  (  constant-expression  ,  string-literal  )  ;
+storage-class-specifier:   register
+storage-class-specifier:   typedef
+storage-class-specifier:   extern
+storage-class-specifier:   static
+storage-class-specifier:   _Thread_local
+storage-class-specifier:   auto
+struct-declaration:   type-qualifier  z-additionzzzze
+struct-declaration:   type-specifier  z-additionzzzzd
+struct-declaration:   _Static_assert  (  constant-expression  ,  string-literal  )  ;
+z-additionzzzzd:   ;
+z-additionzzzzd:   struct-declarator-list  ;
+z-additionzzzzd:   specifier-qualifier-list  z-additionzzzzg
+z-additionzzzze:   struct-declarator-list  ;
+z-additionzzzze:   ;
+z-additionzzzze:   specifier-qualifier-list  z-additionzzzzf
+z-additionzzzzf:   ;
+z-additionzzzzf:   struct-declarator-list  ;
+z-additionzzzzg:   ;
+z-additionzzzzg:   struct-declarator-list  ;
+struct-declaration-list:   static_assert-declaration  z-additionp
+struct-declaration-list:   specifier-qualifier-list  z-additionzzzzh
+z-additionzzzzh:   struct-declarator-list  ;  z-additionp
+z-additionzzzzh:   ;  z-additionp
+struct-declarator:   :  constant-expression
+struct-declarator:   pointer  direct-declarator  z-additionzzzzi
+struct-declarator:   direct-declarator  z-additionzzzzj
+z-additionzzzzi:   :  constant-expression
+z-additionzzzzi:   $
+z-additionzzzzj:   $
+z-additionzzzzj:   :  constant-expression
+struct-declarator-list:   :  constant-expression  z-additionq
+struct-declarator-list:   declarator  z-additionzzzzk
+z-additionzzzzk:   z-additionq
+z-additionzzzzk:   :  constant-expression  z-additionq
+struct-or-union:   union
+struct-or-union:   struct
+struct-or-union-specifier:   union  z-additionzzzzm
+struct-or-union-specifier:   struct  z-additionzzzzl
+z-additionzzzzl:   identifier  z-additionzzzzn
+z-additionzzzzl:   {  struct-declaration-list  }
+z-additionzzzzm:   identifier  z-additionzzzzo
+z-additionzzzzm:   {  struct-declaration-list  }
+z-additionzzzzn:   $
+z-additionzzzzn:   {  struct-declaration-list  }
+z-additionzzzzo:   $
+z-additionzzzzo:   {  struct-declaration-list  }
+translation-unit:   declaration  z-additionza
+translation-unit:   function-definition  z-additionza
+type-name:   type-qualifier  z-additionzzzzq
+type-name:   type-specifier  z-additionzzzzp
+z-additionzzzzp:   specifier-qualifier-list  z-additionzzzzs
+z-additionzzzzp:   abstract-declarator
+z-additionzzzzp:   $
+z-additionzzzzq:   abstract-declarator
+z-additionzzzzq:   specifier-qualifier-list  z-additionzzzzr
+z-additionzzzzq:   $
+z-additionzzzzr:   $
+z-additionzzzzr:   abstract-declarator
+z-additionzzzzs:   $
+z-additionzzzzs:   abstract-declarator
+type-qualifier:   _Atomic
+type-qualifier:   const
+type-qualifier:   restrict
+type-qualifier:   volatile
+type-qualifier-list:   _Atomic  z-additiont
+type-qualifier-list:   const  z-additiont
+type-qualifier-list:   restrict  z-additiont
+type-qualifier-list:   volatile  z-additiont
+type-specifier:   typedef-name
+type-specifier:   void
+type-specifier:   char
+type-specifier:   short
+type-specifier:   int
+type-specifier:   long
+type-specifier:   float
+type-specifier:   double
+type-specifier:   signed
+type-specifier:   unsigned
+type-specifier:   _Bool
+type-specifier:   _Complex
+type-specifier:   _Atomic  (  type-name  )
+type-specifier:   struct-or-union  z-additionzzzzt
+type-specifier:   enum  z-additionzzzzv
+z-additionzzzzt:   {  struct-declaration-list  }
+z-additionzzzzt:   identifier  z-additionzzzzu
+z-additionzzzzu:   {  struct-declaration-list  }
+z-additionzzzzu:   $
+z-additionzzzzv:   {  enumerator-list  z-additionzzzzw
+z-additionzzzzv:   identifier  z-additionzzzzx
+z-additionzzzzw:   }
+z-additionzzzzw:   ,  }
+z-additionzzzzx:   $
+z-additionzzzzx:   {  enumerator-list  z-additionzzzzy
+z-additionzzzzy:   }
+z-additionzzzzy:   ,  }
+typedef-name:   identifier
+unary-expression:   alignof  (  type-name  )
+unary-expression:   primary-expression  z-additionb
+unary-expression:   (  type-name  )  {  initializer-list  z-additionzzzzz
+unary-expression:   sizeof  z-additionzzzzza
+unary-expression:   ++  unary-expression
+unary-expression:   --  unary-expression
+unary-expression:   unary-operator  cast-expression
+z-additionzzzzz:   ,  }  z-additionb
+z-additionzzzzz:   }  z-additionb
+z-additionzzzzza:   unary-expression
+z-additionzzzzza:   (  type-name  )
+unary-operator:   !
+unary-operator:   &
+unary-operator:   *
+unary-operator:   +
+unary-operator:   -
+unary-operator:   ~
+z-additiona:   $
+z-additiona:   ,  generic-association  z-additiona
+z-additionb:   --  z-additionb
+z-additionb:   [  expression  ]  z-additionb
+z-additionb:   (  z-additionzzzzzb
+z-additionb:   $
+z-additionb:   .  identifier  z-additionb
+z-additionb:   ->  identifier  z-additionb
+z-additionb:   ++  z-additionb
+z-additionzzzzzb:   )  z-additionb
+z-additionzzzzzb:   argument-expression-list  )  z-additionb
+z-additionc:   $
+z-additionc:   ,  assignment-expression  z-additionc
+z-additiond:   $
+z-additiond:   *  cast-expression  z-additiond
+z-additiond:   /  cast-expression  z-additiond
+z-additiond:   %  cast-expression  z-additiond
+z-additione:   $
+z-additione:   +  multiplicative-expression  z-additione
+z-additione:   -  multiplicative-expression  z-additione
+z-additionf:   $
+z-additionf:   <<  additive-expression  z-additionf
+z-additionf:   >>  additive-expression  z-additionf
+z-additiong:   $
+z-additiong:   <  shift-expression  z-additiong
+z-additiong:   >  shift-expression  z-additiong
+z-additiong:   <=  shift-expression  z-additiong
+z-additiong:   >=  shift-expression  z-additiong
+z-additionh:   $
+z-additionh:   ==  relational-expression  z-additionh
+z-additionh:   !=  relational-expression  z-additionh
+z-additioni:   $
+z-additioni:   &  equality-expression  z-additioni
+z-additionj:   $
+z-additionj:   ^  AND-expression  z-additionj
+z-additionk:   $
+z-additionk:   |  exclusive-OR-expression  z-additionk
+z-additionl:   $
+z-additionl:   &&  inclusive-OR-expression  z-additionl
+z-additionm:   $
+z-additionm:   ||  logical-AND-expression  z-additionm
+z-additionn:   $
+z-additionn:   ,  assignment-expression  z-additionn
+z-additiono:   $
+z-additiono:   ,  init-declarator  z-additiono
+z-additionp:   static_assert-declaration  z-additionp
+z-additionp:   specifier-qualifier-list  z-additionzzzzzc
+z-additionp:   $
+z-additionzzzzzc:   struct-declarator-list  ;  z-additionp
+z-additionzzzzzc:   ;  z-additionp
+z-additionq:   $
+z-additionq:   ,  struct-declarator  z-additionq
+z-additionr:   $
+z-additionr:   ,  enumerator  z-additionr
+z-additions:   $
+z-additions:   [  z-additionzzzzzd
+z-additions:   (  z-additionzzzzzf
+z-additionzzzzzd:   ]  z-additions
+z-additionzzzzzd:   assignment-expression  ]  z-additions
+z-additionzzzzzd:   static  type-qualifier-list  assignment-expression  ]  z-additions
+z-additionzzzzzd:   type-qualifier-list  z-additionzzzzze
+z-additionzzzzzd:   *  ]  z-additions
+z-additionzzzzze:   static  assignment-expression  ]  z-additions
+z-additionzzzzze:   *  ]  z-additions
+z-additionzzzzze:   assignment-expression  ]  z-additions
+z-additionzzzzze:   ]  z-additions
+z-additionzzzzzf:   parameter-type-list  )  z-additions
+z-additionzzzzzf:   identifier-list  )  z-additions
+z-additionzzzzzf:   )  z-additions
+z-additiont:   $
+z-additiont:   const  z-additiont
+z-additiont:   restrict  z-additiont
+z-additiont:   volatile  z-additiont
+z-additiont:   _Atomic  z-additiont
+z-additionu:   $
+z-additionu:   ,  parameter-declaration  z-additionu
+z-additionv:   $
+z-additionv:   ,  identifier  z-additionv
+z-additionw:   (  z-additionzzzzzi
+z-additionw:   [  z-additionzzzzzg
+z-additionw:   $
+z-additionzzzzzg:   assignment-expression  ]  z-additionw
+z-additionzzzzzg:   ]  z-additionw
+z-additionzzzzzg:   *  ]  z-additionw
+z-additionzzzzzg:   assignment-expression  ]  z-additionw
+z-additionzzzzzg:   static  type-qualifier-list  assignment-expression  ]  z-additionw
+z-additionzzzzzg:   type-qualifier-list  z-additionzzzzzh
+z-additionzzzzzh:   assignment-expression  ]  z-additionw
+z-additionzzzzzh:   ]  z-additionw
+z-additionzzzzzh:   static  assignment-expression  ]  z-additionw
+z-additionzzzzzi:   )  z-additionw
+z-additionzzzzzi:   parameter-type-list  )  z-additionw
+z-additionx:   $
+z-additionx:   ,  z-additionzzzzzj
+z-additionzzzzzj:   designation  initializer  z-additionx
+z-additionzzzzzj:   initializer  z-additionx
+z-additiony:   $
+z-additiony:   [  constant-expression  ]  z-additiony
+z-additiony:   .  identifier  z-additiony
+z-additionz:   $
+z-additionz:   declaration  z-additionz
+z-additionz:   statement  z-additionz
+z-additionza:   $
+z-additionza:   function-definition  z-additionza
+z-additionza:   declaration  z-additionza
+z-additionzb:   static_assert-declaration  z-additionzb
+z-additionzb:   declaration-specifiers  z-additionzzzzzk
+z-additionzb:   $
+z-additionzzzzzk:   init-declarator-list  ;  z-additionzb
+z-additionzzzzzk:   ;  z-additionzb

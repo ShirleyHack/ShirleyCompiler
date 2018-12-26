@@ -2,6 +2,7 @@
 #define _SIGN_H_
 #include <string>
 #include <string.h>
+#include "define.h"
 using namespace std;
 
 void InitSignCharset(const char* signlist[], int signlistsize);

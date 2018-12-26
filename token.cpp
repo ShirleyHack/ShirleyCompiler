@@ -2,42 +2,28 @@
 #include "token.h"
 #include "externs.h"
 
-Token* TokenInit()
+Token* CreateNewToken()
 {
     Token* newtoken = (Token*)malloc(sizeof(Token));
-    newtoken->type = Token::None;
-    newtoken->value = NULL;
+    newtoken->type = Type::None;
+    memset(newtoken->value, 0, sizeof(newtoken->value));
     newtoken->next = NULL;
     return newtoken;
 }
 
-Token* TokenInitVal(Token::Type type, char* buf)
+Token* CreateNewToken(Type type, char* value)
 {
     Token* newtoken = (Token*)malloc(sizeof(Token));
-    newtoken->type = Token::None;
+    newtoken->type = type;
     newtoken->next = NULL;
-    char* ptr = buf;
-    int i, size = 0;
-    while(*ptr != '\0')
-    {
-        size++;
-        ptr++;
-    }
-    size++;
-    newtoken->value = (char*)malloc(sizeof(char)*size);
-    for(i = 0; i < size; i++)
-    {
-        *(newtoken->value + i) = *(buf + i);
-        // printf("%c ", *(value+i));
-    }
+    strcpy(newtoken->value, value);
     return newtoken;
 }
 
 TokenList* TokenListInit()
 {
     TokenList* ptr = (TokenList*)malloc(sizeof(TokenList));
-    ptr->head = (Token*)malloc(sizeof(Token));
-    ptr->head = TokenInit();
+    ptr->head = CreateNewToken();
     return ptr;
 }
 
@@ -48,4 +34,18 @@ void TokenList::pushback(Token* newtoken)
         cur = cur->next;
     cur->next = newtoken;
     // printf("token: %s\n", newtoken->value);
+}
+void PrintToken(Token* word)
+{
+    printf("Type: %-18s Value: %s\n",
+        word->type == Type::Macro ? "Macro" :
+        word->type == Type::Keyword ? "Keyword" :
+        word->type == Type::Int ? "Int" :
+        word->type == Type::Float ? "Float" :
+        word->type == Type::Identifier ? "Identifier" :
+        word->type == Type::Annotation ? "Annotation" :
+        word->type == Type::Operator ? "Sign" :
+        word->type == Type::String ? "String" :
+        word->type == Type::EndSymbol ? "EndSymbol" :
+        "Wrong syntax!", word->value);
 }

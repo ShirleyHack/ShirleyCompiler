@@ -1,21 +1,30 @@
 #ifndef _TOKEN_H_
 #define _TOKEN_H_
+#include "define.h"
+/*
+struct NormalNode
+{
+    char content[30];//内容
+    char describe[30];//描述
+    int type;//种别码
+    int addr;//入口地址
+    int line;//所在行数
+    NormalNode * next;//下一个节点
+};
+*/
 
 struct Token
 {
 public:
-    enum Type
-    {
-        None = 0 , Keyword, Number, Identifier, Sign,
-        Annotation, String, EndSymbol, Macro, Int, Float
-        // RegEx, Space, NewLine
-    };
+
     Type type;
-    char *value;
+    char value[kTokenLen];
     Token *next;
 };
-Token* TokenInit();
-Token* TokenInitVal(Token::Type type, char* buf);
+typedef struct Token Token;
+void PrintToken(Token* word);
+Token* CreateNewToken();
+Token* CreateNewToken(Type type, char* buf);
 
 struct TokenList
 {

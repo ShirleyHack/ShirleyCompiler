@@ -8,66 +8,74 @@
 #include "token.h"
 using namespace std;
 
-class Scanner
+
+struct Scanner
 {
-public:
-    enum State
-    {
-        Normal, Sign, Annotation, String, Identifier,
-        Number, Macro
-        // RegEx, Space,
-    };
-    Scanner():forward(0), lread(false), rread(false),
-        retracted(false), linenum(0), wordnum(0),
-        charnum(0), state(Normal)
-        {
-            buffer[kLEnd] = EOF;
-            buffer[kREnd] = EOF;
-        }
-    Scanner(const char* filename):forward(0), lread(false),
-        rread(false), retracted(false), linenum(0),
-        wordnum(0), charnum(0), state(Normal)
-        {
-            memset(buffer, 0 ,sizeof(buffer));
-            buffer[kLEnd] = EOF;
-            buffer[kREnd] = EOF;
-            fin = fopen(filename, "r");
-        }
-    Scanner(const char* filein, const char* fileerr, const char* filedoc):forward(0), lread(false),
-        rread(false), retracted(false), linenum(0),
-        wordnum(0), charnum(0), state(Normal)
-        {
-            memset(buffer, 0 ,sizeof(buffer));
-            buffer[kLEnd] = EOF;
-            buffer[kREnd] = EOF;
-            fin = fopen(filein, "r");
-            ferr = fopen(fileerr, "w");
-            fdoc = fopen(filedoc, "w");
-        }
+// public:
+    // enum State
+    // {
+    //     Normal, Sign, Annotation, String, Identifier,
+    //     Number, Macro
+    //     // RegEx, Space,
+    // };
+    // Scanner(): linenum(0), wordnum(0),
+    //     charnum(0), state(Normal)
+    //     {
+    //         buffer[kLEnd] = EOF;
+    //         buffer[kREnd] = EOF;
+    //     }
+    // Scanner(const char* filename): linenum(0),
+    //     wordnum(0), charnum(0), state(Normal)
+    //     {
+    //         memset(buffer, 0 ,sizeof(buffer));
+    //         buffer[kLEnd] = EOF;
+    //         buffer[kREnd] = EOF;
+    //         fin = fopen(filename, "r");
+    //     }
+    // Scanner(const char* filein, const char* fileerr, const char* filedoc): linenum(0),
+    //     wordnum(0), charnum(0), state(Normal)
+    //     {
+    //         memset(buffer, 0 ,sizeof(buffer));
+    //         buffer[kLEnd] = EOF;
+    //         buffer[kREnd] = EOF;
+    //         fin = fopen(filein, "r");
+    //         ferr = fopen(fileerr, "w");
+    //         fdoc = fopen(filedoc, "w");
+    //     }
     // ~Scanner()
     // {
     //     token.clear();
     //     token.shrink_to_fit();
     // }
     FILE *fin, *ferr, *fdoc;
-    bool lread, rread, retracted;
+    int linenum, wordnum, charnum, markend, wrongnum, forwardptr;
+    int EndOfFile, lread, rread, retracted;
     char curchar, buffer[kMaxBuf];
-    int forward, linenum, wordnum, charnum;
-    void Tokenizer();
-    void FillBuffer();
-    void read();
-    bool GetChar();
+
+    // void FillBuffer();
+    // Token* NextWord();
+    // bool GetChar();
     // void RefreshBuffer(int strptr);
-    void retract();
-    // void SkipSpace();
-    // void SkipSpaceExceptLine();
-    bool TryNext(char ch);
-private:
+    // void retract();
+    // // void SkipSpace();
+    // // void SkipSpaceExceptLine();
+    // bool TryNext(char ch);
     State state;
 };
-void Initialize();
-bool IsIdentifierFirst(char ch);
-bool InIdentifierNotSpecific(char ch);
+typedef struct Scanner Scanner;
+
+void FillBuffer(Scanner* sc);
+Token* NextWord(Scanner* sc);
+int GetChar(Scanner *sc);
+void retract(Scanner *sc);
+int TryNext(Scanner *sc, char ch);
+Scanner* CreateNewScanner();
+Scanner* CreateNewScanner(const char* filename);
+Scanner* CreateNewScanner(const char* filein, const char* fileerr, const char* filedoc);
+Scanner* InitLexAnaly(int argc, char* argv[]);
+int IsIdentifierFirst(char ch);
+int InIdentifierNotSpecific(char ch);
+int SizeOfArr(int* arr);
 void init();
 void PrintTokenList();
 #endif
